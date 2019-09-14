@@ -10,7 +10,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class AccessServerBootstrap {
 
-    public void bind(int port) throws Exception {
+    private int port;
+
+    public AccessServerBootstrap(int port) {
+        this.port = port;
+    }
+
+    public void bind() throws Exception {
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
 
@@ -23,6 +29,8 @@ public class AccessServerBootstrap {
                     .option(ChannelOption.SO_BACKLOG, 1024)
                     .childHandler(new AccessChannelHandler());
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
+
+            channelFuture.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

@@ -6,7 +6,12 @@ package com.clay.im.access;
 public class AccessServer {
 
     public static void main(String[] args) {
-        int port = 8080;
-
+        try {
+            int port = 8888;
+            new AccessServerBootstrap(port).bind();
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(0);
+        }
     }
 }
