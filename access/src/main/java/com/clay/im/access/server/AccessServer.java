@@ -1,4 +1,4 @@
-package com.clay.im.access;
+package com.clay.im.access.server;
 
 /**
  * @author clay
@@ -10,7 +10,7 @@ public class AccessServer {
             int port = 8888;
             new AccessServerBootstrap(port).bind();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(0);
         }
     }

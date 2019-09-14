@@ -1,9 +1,10 @@
-package com.clay.im.access;
+package com.clay.im.access.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * @author clay
@@ -27,6 +28,7 @@ public class AccessServerBootstrap {
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 1024)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(1024, 1024, 1024))
                     .childHandler(new AccessChannelHandler());
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
 
@@ -41,7 +43,9 @@ public class AccessServerBootstrap {
     private static class AccessChannelHandler extends ChannelInitializer<ServerChannel> {
         @Override
         protected void initChannel(ServerChannel ch) throws Exception {
-            ch.pipeline().addLast(new AccessServerHandler());
+            // 添加自定义编解码器
+            ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 180));
+            ch.pipeline().addLast("accessServerHandler", new AccessServerHandler());
         }
     }
 }
